@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/quochuylv304/000_Self_Taught/002_Iterative_UNIX_STREAM/client.c
+stdio.h
+-
+stdlib.h
+-
+sys/socket.h
+-
+sys/un.h
+-
+errno.h
+-
+unistd.h
+-
+

@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/quochuylv304/000_Self_Taught/004_Process_and_Signal/parent.c
+stdio.h
+-
+stdlib.h
+-
+stdbool.h
+-
+string.h
+-
+unistd.h
+-
+errno.h
+-
+signal.h
+-
+sys/wait.h
+-
+sys/timerfd.h
+-
+
