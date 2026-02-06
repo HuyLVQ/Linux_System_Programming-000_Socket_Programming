@@ -5,11 +5,12 @@
 #include <string.h>
 
 #include <sys/signal.h>
+#include <sys/epoll.h>
 
 #define SIG_CHECKIN (SIGRTMIN + 1)
 #define MAX_CHILD 100
-#define WATCHDOG_PRED_S 1
-#define CHILD_PROCESS_PRED_US 100000
+#define WATCHDOG_PRED_S 2
+#define CHILD_PROCESS_PRED_US 50000
 
 /// Spawns multiple child, the number of child is specified by user input
 /// All the child Process are active only all of them are succesfully initialized to ensure a synchronized period across all the children.---> Use SIGUSR2
@@ -49,6 +50,10 @@ void signal_handler(int sig, siginfo_t *siginfo, void *ucontext)
     else if(sig == SIG_CHECKIN)
     {
         last_checkin_pid = siginfo->si_pid;
+        int idx = find_the_corresponding_order(last_checkin_pid);
+        if (idx >= 0)
+            has_checked_in[idx] = 1;
+        last_checkin_pid = -1;
     }
 }
 
@@ -130,12 +135,12 @@ int main(int argc, char **argv)
 
     for(;;)
     {
-        if (last_checkin_pid != -1) {
-            int idx = find_the_corresponding_order(last_checkin_pid);
-            if (idx >= 0)
-                has_checked_in[idx] = 1;
-            last_checkin_pid = -1;
-        }
+        // if (last_checkin_pid != -1) {
+        //     int idx = find_the_corresponding_order(last_checkin_pid);
+        //     if (idx >= 0)
+        //         has_checked_in[idx] = 1;
+        //     last_checkin_pid = -1;
+        // }
 
         if (sigalrm_flag) {
             for (int i = 0; i < child_num; i++) {
