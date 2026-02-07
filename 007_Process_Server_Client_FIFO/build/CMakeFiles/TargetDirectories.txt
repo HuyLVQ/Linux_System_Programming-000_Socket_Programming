@@ -1,0 +1,4 @@
+/home/quochuylv304/000_Self_Taught/007_Process_Server_Client_FIFO/build/CMakeFiles/edit_cache.dir
+/home/quochuylv304/000_Self_Taught/007_Process_Server_Client_FIFO/build/CMakeFiles/rebuild_cache.dir
+/home/quochuylv304/000_Self_Taught/007_Process_Server_Client_FIFO/build/CMakeFiles/server.dir
+/home/quochuylv304/000_Self_Taught/007_Process_Server_Client_FIFO/build/CMakeFiles/client.dir

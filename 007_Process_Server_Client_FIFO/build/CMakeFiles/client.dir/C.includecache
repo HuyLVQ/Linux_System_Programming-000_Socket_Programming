@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/fifoseq_num.h
+sys/types.h
+-
+sys/stat.h
+-
+
+/home/quochuylv304/000_Self_Taught/007_Process_Server_Client_FIFO/src/client.c
+stdio.h
+-
+stdlib.h
+-
+stdbool.h
+-
+unistd.h
+-
+string.h
+-
+errno.h
+-
+sys/signal.h
+-
+semaphore.h
+-
+sys/stat.h
+-
+sys/epoll.h
+-
+fcntl.h
+-
+fifoseq_num.h
+/home/quochuylv304/000_Self_Taught/007_Process_Server_Client_FIFO/src/fifoseq_num.h
+
