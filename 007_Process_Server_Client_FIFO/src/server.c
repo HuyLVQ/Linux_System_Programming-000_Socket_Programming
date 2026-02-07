@@ -25,16 +25,16 @@ int initialize_server_client_fifo_and_sema(pid_t pid, int* _client_fifo_fd, sem_
         return -1;
     }
 
-    _client_fifo_fd[*pid_order] = open(result, O_WRONLY | O_NONBLOCK);
+    _client_fifo_fd[*pid_order] = open(result, O_RDWR | O_NONBLOCK);
     _established_client_pid_list[*pid_order] = pid;
 
     snprintf(result, CLIENT_SEMA_PATH_NAMESIZE, CLIENT_SEMA_PATH_TEMPLATE, pid);
     sema_list[*pid_order] = sem_open(result, O_CREAT, 0666, 1);
 
-    snprintf(result, 200, "[SERVER] Established FIFO for %d", pid);
+    snprintf(result, 200, "[SERVER] Established FIFO for %d\n", pid);
     write(STDOUT_FILENO, result, strlen(result));
 
-    snprintf(result, 200, "[SERVER] Established Semaphore for %d", pid);
+    snprintf(result, 200, "[SERVER] Established Semaphore for %d\n", pid);
     write(STDOUT_FILENO, result, strlen(result));
 
     (*pid_order) ++;
@@ -98,6 +98,10 @@ int main(int argc, char **argv)
     int client_pid_idx = 0;
 
     sem_t *server_semaphore = sem_open(SERVER_SEMA_PATH, O_CREAT, 0666, 1);
+    if (server_semaphore == SEM_FAILED) {
+        perror("[SERVER] sem_open SERVER_SEMA_PATH failed");
+        exit(EXIT_FAILURE);
+    }
     sem_t *client_semaphore_list[CHILD_NUM];
 
     if (mkfifo(SERVER_FIFO_PATH, 0666) == -1)
@@ -141,15 +145,13 @@ int main(int argc, char **argv)
         epoll_wait(epoll_fd, evlist, 1, -1);
 
         sem_wait(server_semaphore);
-
         struct request received_request;
         read(server_listening_port, &received_request, sizeof(received_request));
-
         sem_post(server_semaphore);
 
         int index = which_index(established_client_pid_list, CHILD_NUM, received_request.pid);
         
-        if(is_present(established_client_pid_list, CHILD_NUM, received_request.pid) == false)
+        if(index == -1)
         {
             char* template = "[SERVER] New connection detected, client PID: %d\n";
             snprintf(res, 100, template, received_request.pid);
@@ -159,7 +161,6 @@ int main(int argc, char **argv)
         }
         else 
         {
-
             char* template = "[SERVER] Received request from children %dth\n";
             snprintf(res, 100, template, index);
             write(STDOUT_FILENO, res, strlen(res));

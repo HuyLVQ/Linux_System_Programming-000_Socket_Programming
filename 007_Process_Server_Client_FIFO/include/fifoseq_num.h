@@ -2,7 +2,7 @@
 #include <sys/stat.h>
 
 #define SERVER_FIFO_PATH "/tmp/server_fifo"
-#define CLIENT_FIFO_PATH_TEMPLATE "/tmp/client_fifo.%d"
+#define CLIENT_FIFO_PATH_TEMPLATE "/tmp/client_fifo_%d"
 #define CLIENT_FIFO_PATH_NAMESIZE (sizeof(CLIENT_FIFO_PATH_TEMPLATE) + 20)
 
 #define SERVER_SEMA_PATH "/server"

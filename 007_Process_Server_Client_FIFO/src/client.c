@@ -22,6 +22,12 @@ int main()
 
     int server_fifo_fd = open(SERVER_FIFO_PATH, O_WRONLY);
     sem_t *server_fifo_sema = sem_open(SERVER_SEMA_PATH, 0);
+    if (server_fifo_sema == SEM_FAILED) {
+        perror("[CLIENT] sem_open SERVER_SEMA_PATH failed");
+        exit(EXIT_FAILURE);
+    } else {
+        printf("[CLIENT] Connected Server FIFO!\n");
+    }
 
     char buf[10];
     ssize_t n = read(STDIN_FILENO, buf, sizeof(buf) - 1);
@@ -35,13 +41,26 @@ int main()
     sem_wait(server_fifo_sema);
     write(server_fifo_fd, &send_request, sizeof(send_request));
     sem_post(server_fifo_sema);
-    sleep(3);
+    sleep(1);
 
     snprintf(res, CLIENT_SEMA_PATH_NAMESIZE, CLIENT_SEMA_PATH_TEMPLATE, getpid());
     sem_t *client_fifo_sema = sem_open(res, 0);
+    if (client_fifo_sema == SEM_FAILED) {
+        perror("[CLIENT] sem_open CLIENT_SEMA failed");
+        exit(EXIT_FAILURE);
+    } else {
+        printf("[CLIENT] sem_open CLIENT_SEMA succesfully!\n");
+    }
 
     snprintf(res, CLIENT_FIFO_PATH_NAMESIZE, CLIENT_FIFO_PATH_TEMPLATE, getpid());
     int client_fifo_fd = open(res, O_RDONLY);
+    if (client_fifo_fd == -1)
+    {
+        perror("[CLIENT] Could not open Writing Port\n");
+        exit(EXIT_FAILURE);
+    } else {
+        printf("[CLIENT] Open CLIENT_FIFO succesfully!\n");
+    }
 
     printf("[CLIENT] Connection established ...\n");
 
@@ -50,24 +69,33 @@ int main()
         printf("[CLIENT] Type in any number to send to the Server ...\n");
         ssize_t n = read(STDIN_FILENO, buf, sizeof(buf) - 1);
         buf[n > 0 ? n : 0] = '\0';
-        read(STDIN_FILENO, buf, strlen(buf));
 
         struct request send_request;
         send_request.pid = getpid();
         send_request.number = atoi(buf);
 
+        printf("[CLIENT] Sending...\n");
         sem_wait(server_fifo_sema);
+        printf("[CLIENT] Inside Critical Session...\n");
         write(server_fifo_fd, &send_request, sizeof(send_request));
         sem_post(server_fifo_sema);
+        printf("[CLIENT] Sent !\n");
+        
+        usleep(10);
 
+        printf("[CLIENT] Receiving...\n");
         struct response rcv_response;
         sem_wait(client_fifo_sema);
+        printf("[CLIENT] Inside Critical Session...\n");
         read(client_fifo_fd, &rcv_response, sizeof(rcv_response));
         sem_post(client_fifo_sema);
+        printf("[CLIENT] Received !\n");
 
         
         char numbuf[200];
-        snprintf(numbuf, 200, "[CLIENT] Server has sent: %d", rcv_response.number);
+        snprintf(numbuf, 200, "[CLIENT] Server has sent: %d\n", rcv_response.number);
         write(STDOUT_FILENO, numbuf, strlen(numbuf));
     }
+
+    exit(EXIT_SUCCESS);
 }
